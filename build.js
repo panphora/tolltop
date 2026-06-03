@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Keeps tolltop.js in sync with its two sources of truth:
-//   - package.json "version"  -> the banner version line
-//   - tolltop.css             -> the embedded CSS const used for self-injection
+// Keeps the generated files in sync with their sources of truth:
+//   - package.json "version"  -> tolltop.js banner + the version pin in README.md and llms.txt
+//   - tolltop.css             -> the embedded CSS const in tolltop.js used for self-injection
 // Run via `npm run build`; also runs automatically on `prepublishOnly`.
 const fs = require('fs');
 const path = require('path');
@@ -34,4 +34,19 @@ if (js !== before) {
   console.log('tolltop.js synced: v' + pkg.version + ', CSS ' + css.length + ' chars');
 } else {
   console.log('tolltop.js already in sync: v' + pkg.version);
+}
+
+for (const name of ['README.md', 'llms.txt']) {
+  const docPath = path.join(dir, name);
+  const doc = fs.readFileSync(docPath, 'utf8');
+  const synced = doc.replace(/tolltop@\d+\.\d+\.\d+/g, 'tolltop@' + pkg.version);
+
+  if (!/tolltop@\d+\.\d+\.\d+/.test(synced)) throw new Error('build: version pin not found in ' + name);
+
+  if (synced !== doc) {
+    fs.writeFileSync(docPath, synced);
+    console.log(name + ' synced: v' + pkg.version);
+  } else {
+    console.log(name + ' already in sync: v' + pkg.version);
+  }
 }

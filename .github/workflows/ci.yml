@@ -15,10 +15,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Verify tolltop.js is in sync with its sources
+      - name: Verify generated files are in sync with their sources
         run: |
           node build.js
-          git diff --exit-code tolltop.js
+          git diff --exit-code
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
       - run: npm test
