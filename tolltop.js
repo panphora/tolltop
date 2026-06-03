@@ -117,7 +117,7 @@
 
   function show(el) {
     const text = el.getAttribute('data-tooltip');
-    if (!text) return;
+    if (!text || !text.trim()) return;
     ensureTip();
     if (active !== el) {
       if (active) restoreAria();
