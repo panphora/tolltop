@@ -111,6 +111,12 @@
 
   button.demo-btn { cursor: pointer; }
 
+  .theme-btn.selected {
+    border-color: var(--accent);
+    background: #221c30;
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
   .prose { color: var(--muted); font-size: 13px; line-height: 1.75; }
   .prose code { background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--accent); }
 
@@ -140,16 +146,22 @@
 
   <header>
     <h1>tolltop <span>&#9656;</span></h1>
-    <p>Tiny edge-aware tooltips. One attribute, one config call, no dependencies, no build. Works in browsers back to mid-2023.</p>
+    <p>Tiny edge-aware tooltips. One attribute, one config call, no dependencies, no build. Works in all modern browsers.</p>
   </header>
 
   <section>
-    <h2>Usage</h2>
-    <div class="code-block"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+    <h2>Install</h2>
+    <div class="code-block"><span class="comment">&lt;!-- CDN: one script tag, injects its own CSS --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
 
-<span class="comment">&lt;!-- mark any element with the attribute --&gt;</span>
-<span class="tag">&lt;button</span> <span class="attr">data-tooltip</span>=<span class="val">"Save your work"</span><span class="tag">&gt;</span>Save<span class="tag">&lt;/button&gt;</span></div>
-    <p class="prose">Shows on hover and keyboard focus, hides on <code>Esc</code>. Loading <code>tolltop.css</code> yourself is optional, the script injects it if it isn't already there.</p>
+<span class="comment">&lt;!-- or load the CSS yourself to theme it; the script then skips its own copy --&gt;</span>
+<span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"https://cdn.jsdelivr.net/npm/tolltop/tolltop.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"</span><span class="tag">&gt;&lt;/script&gt;</span></div>
+    <div class="code-block"><span class="comment"># or via npm, for bundlers</span>
+npm install tolltop
+<span class="fn">import</span> <span class="val">'tolltop'</span></div>
+    <p class="prose">Then mark any element with the attribute. Tooltips show on hover and keyboard focus, and hide on <code>Esc</code>.</p>
+    <div class="code-block"><span class="tag">&lt;button</span> <span class="attr">data-tooltip</span>=<span class="val">"Save your work"</span><span class="tag">&gt;</span>Save<span class="tag">&lt;/button&gt;</span></div>
   </section>
 
   <section>
@@ -163,14 +175,14 @@
   <span class="key">padding</span>: <span class="val">'6px 9px'</span>,
   <span class="key">maxWidth</span>: <span class="val">240</span>,
   <span class="key">placement</span>: <span class="val">'auto'</span>,  <span class="comment">// 'auto' | 'top' | 'bottom'</span>
-  <span class="key">gap</span>: <span class="val">8</span>,             <span class="comment">// gap to the trigger</span>
+  <span class="key">gap</span>: <span class="val">10</span>,            <span class="comment">// gap to the trigger</span>
   <span class="key">edge</span>: <span class="val">24</span>            <span class="comment">// min gap from each viewport side</span>
 });</div>
     <p class="prose">Try it live, then hover any tooltip on the page:</p>
-    <div class="demo-grid">
-      <button class="demo-btn" onclick="tolltop({bg:'#18181b',color:'#e4e4e7',radius:6,fontSize:12,placement:'auto'})">default</button>
-      <button class="demo-btn" onclick="tolltop({bg:'#1e3a5f',color:'#fff',radius:10,fontSize:14})">blue, rounder</button>
-      <button class="demo-btn" onclick="tolltop({bg:'#14532d',color:'#dcfce7',radius:14,fontSize:13,placement:'bottom'})">green, bottom</button>
+    <div class="demo-grid" id="theme-buttons">
+      <button class="demo-btn theme-btn selected" data-cfg='{"bg":"#18181b","color":"#e4e4e7","radius":6,"fontSize":12,"placement":"auto"}'>default</button>
+      <button class="demo-btn theme-btn" data-cfg='{"bg":"#1e3a5f","color":"#fff","radius":10,"fontSize":14,"placement":"auto"}'>blue, rounder</button>
+      <button class="demo-btn theme-btn" data-cfg='{"bg":"#14532d","color":"#dcfce7","radius":14,"fontSize":13,"placement":"bottom"}'>green, bottom</button>
     </div>
   </section>
 
@@ -202,7 +214,7 @@
         <tr><td><code>padding</code></td><td>'8px 12px'</td><td>6px 9px</td></tr>
         <tr><td><code>maxWidth</code></td><td>320</td><td>240</td></tr>
         <tr><td><code>placement</code></td><td>'top' / 'bottom'</td><td>auto</td></tr>
-        <tr><td><code>gap</code></td><td>10</td><td>8</td></tr>
+        <tr><td><code>gap</code></td><td>12</td><td>10</td></tr>
         <tr><td><code>edge</code></td><td>16</td><td>24</td></tr>
       </tbody>
     </table>
@@ -218,5 +230,13 @@
 <div class="edge br"><div class="demo-btn" data-tooltip="Bottom-right corner: stays above and shifts left.">bottom-right &#9716;</div></div>
 
 <script src="tolltop.js"></script>
+<script>
+  document.getElementById('theme-buttons').addEventListener('click', (e) => {
+    const btn = e.target.closest('.theme-btn');
+    if (!btn) return;
+    tolltop(JSON.parse(btn.dataset.cfg));
+    document.querySelectorAll('#theme-buttons .theme-btn').forEach((b) => b.classList.toggle('selected', b === btn));
+  });
+</script>
 </body>
 </html>

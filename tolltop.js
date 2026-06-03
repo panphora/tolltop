@@ -1,3 +1,8 @@
+/*!
+ * tolltop v3.0.1
+ * Tiny edge-aware tooltips with smart positioning. One attribute, one config call.
+ * MIT License · https://github.com/panphora/tolltop
+ */
 (() => {
   'use strict';
   if (window.__tolltop) return;
@@ -7,8 +12,8 @@
   const TIP_ID = 'tolltop-tip';
 
   // Baseline styles, injected only if tolltop.css isn't already on the page.
-  // Keep in sync with tolltop.css.
-  const CSS = `.tolltop{--tt-bg:#18181b;--tt-color:#e4e4e7;--tt-radius:6px;--tt-font-size:12px;--tt-padding:6px 9px;--tt-arrow:6px;--tt-arrow-x:50%;position:fixed;top:0;left:0;z-index:2147483647;box-sizing:border-box;margin:0;width:max-content;max-width:240px;padding:var(--tt-padding);border-radius:var(--tt-radius);background:var(--tt-bg);color:var(--tt-color);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:var(--tt-font-size);font-weight:500;line-height:1.4;text-align:center;white-space:normal;overflow-wrap:break-word;pointer-events:none;box-shadow:0 2px 12px rgba(0,0,0,.3);opacity:0;visibility:hidden}.tolltop[data-show]{opacity:1;visibility:visible}.tolltop::after{content:"";position:absolute;left:var(--tt-arrow-x);transform:translateX(-50%);width:0;height:0;border:var(--tt-arrow) solid transparent}.tolltop[data-placement="top"]::after{top:100%;border-bottom-width:0;border-top-color:var(--tt-bg)}.tolltop[data-placement="bottom"]::after{bottom:100%;border-top-width:0;border-bottom-color:var(--tt-bg)}`;
+  // Generated from tolltop.css by build.js; do not edit by hand. Run `npm run build`.
+  const CSS = `.tolltop{--tt-bg:#18181b;--tt-color:#e4e4e7;--tt-radius:6px;--tt-font-size:12px;--tt-padding:6px 9px;--tt-arrow:6px;--tt-arrow-x:50%;position:fixed;top:0;left:0;z-index:2147483647;box-sizing:border-box;margin:0;width:max-content;max-width:240px;padding:var(--tt-padding);border-radius:var(--tt-radius);background:var(--tt-bg);color:var(--tt-color);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:var(--tt-font-size);font-weight:500;line-height:1.4;text-align:center;white-space:normal;overflow-wrap:break-word;pointer-events:none;box-shadow:0 2px 12px rgba(0,0,0,0.3);opacity:0;visibility:hidden;}.tolltop[data-show]{opacity:1;visibility:visible;}.tolltop::after{content:"";position:absolute;left:var(--tt-arrow-x);transform:translateX(-50%);width:0;height:0;border:var(--tt-arrow) solid transparent;}.tolltop[data-placement="top"]::after{top:100%;border-bottom-width:0;border-top-color:var(--tt-bg);}.tolltop[data-placement="bottom"]::after{bottom:100%;border-top-width:0;border-bottom-color:var(--tt-bg);}`;
 
   const cfg = {
     bg: null,
@@ -18,7 +23,7 @@
     padding: null,
     maxWidth: 240,
     placement: 'auto',
-    gap: 8,
+    gap: 10,
     edge: 24,
   };
 
@@ -68,7 +73,7 @@
     // clientWidth/Height exclude the scrollbar; innerWidth would not.
     const vw = document.documentElement.clientWidth;
     const vh = document.documentElement.clientHeight;
-    const gap = Math.max(0, numOr(cfg.gap, 8));
+    const gap = Math.max(0, numOr(cfg.gap, 10));
     const edge = Math.max(0, numOr(cfg.edge, 24));
 
     const maxW = Math.min(numOr(cfg.maxWidth, 240), vw - edge * 2);
@@ -133,10 +138,36 @@
     if (tip) tip.removeAttribute('data-show');
   }
 
+  // True when a scrollable/overflow ancestor fully clips the element out of its box.
+  function clippedOut(el) {
+    const pos = getComputedStyle(el).position;
+    if (pos === 'fixed') return false; // viewport-positioned, not clipped by scroll ancestors
+    const r = el.getBoundingClientRect();
+    // An absolute element isn't clipped by overflow ancestors below its containing block.
+    const cb = pos === 'absolute' ? el.offsetParent : null;
+    let node = el.parentElement;
+    let clips = !cb;
+    while (node && node !== document.documentElement) {
+      if (!clips && node === cb) clips = true;
+      // Skip non-rendered/zero-box ancestors (e.g. display:contents) that don't actually clip.
+      if (clips && (node.clientWidth || node.clientHeight)) {
+        const o = getComputedStyle(node);
+        if (/auto|scroll|hidden|clip/.test(o.overflow + o.overflowX + o.overflowY)) {
+          const c = node.getBoundingClientRect();
+          const left = c.left + node.clientLeft; // padding box: where overflow actually clips
+          const top = c.top + node.clientTop;
+          if (r.bottom <= top || r.top >= top + node.clientHeight || r.right <= left || r.left >= left + node.clientWidth) return true;
+        }
+      }
+      node = node.parentElement;
+    }
+    return false;
+  }
+
   function reposition() {
     if (!active) return;
-    // Hide if the trigger has been removed or scrolled out of view (a fixed tip
-    // isn't clipped by an ancestor's overflow, so it would otherwise float free).
+    // A fixed tip isn't clipped by an ancestor's overflow, so hide it ourselves when the
+    // trigger is removed, scrolled out of the viewport, or clipped out of a scroll container.
     if (!active.isConnected) {
       hide();
       return;
@@ -144,7 +175,7 @@
     const r = active.getBoundingClientRect();
     const vw = document.documentElement.clientWidth;
     const vh = document.documentElement.clientHeight;
-    if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) {
+    if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw || clippedOut(active)) {
       hide();
       return;
     }

@@ -1,9 +1,13 @@
 {
   "name": "tolltop",
-  "version": "3.0.0",
-  "description": "Tiny dependency-free tooltips with smart edge-aware positioning. One attribute, no build, works in browsers back to mid-2023.",
+  "version": "3.0.1",
+  "description": "Tiny dependency-free tooltips with smart edge-aware positioning. One attribute, no build, works in all modern browsers.",
   "main": "tolltop.js",
   "style": "tolltop.css",
+  "scripts": {
+    "build": "node build.js",
+    "prepublishOnly": "node build.js"
+  },
   "files": [
     "tolltop.js",
     "tolltop.css"

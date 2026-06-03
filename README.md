@@ -1,8 +1,8 @@
 # tolltop
 
 Tiny, dependency-free tooltips with smart edge-aware positioning. One attribute to add a
-tooltip, one call to configure them all, no build step, and it works in every browser
-released since mid-2023 (Chrome/Edge 114+, Firefox 114+, Safari 16.5+).
+tooltip, one call to configure them all, no build step, and it works in all modern
+browsers.
 
 ## Install
 
@@ -42,7 +42,7 @@ tolltop({
   padding: '6px 9px',
   maxWidth: 240,      // px
   placement: 'auto',  // 'auto' | 'top' | 'bottom'
-  gap: 8,             // px between the trigger and the tooltip
+  gap: 10,            // px between the trigger and the tooltip
   edge: 24,           // px min gap from each viewport side
 });
 ```
@@ -56,7 +56,7 @@ tolltop({
 | `padding`    | `'8px 12px'`     | `6px 9px`  |
 | `maxWidth`   | `320`            | `240`      |
 | `placement`  | `'top'`          | `'auto'`   |
-| `gap`        | `10`             | `8`        |
+| `gap`        | `12`             | `10`       |
 | `edge`       | `16`             | `24`       |
 
 Calling `tolltop()` with no arguments returns the current config. The only per-element
