@@ -6,7 +6,8 @@
   "style": "tolltop.css",
   "scripts": {
     "build": "node build.js",
-    "prepublishOnly": "node build.js"
+    "prepublishOnly": "node build.js",
+    "test": "playwright test"
   },
   "files": [
     "tolltop.js",
@@ -25,5 +26,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/panphora/tolltop.git"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }

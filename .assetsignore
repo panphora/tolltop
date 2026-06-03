@@ -1,7 +1,13 @@
 .git
 .gitignore
+.github
 node_modules
 package.json
+package-lock.json
 build.js
 wrangler.jsonc
 .assetsignore
+test
+playwright.config.js
+test-results
+playwright-report
