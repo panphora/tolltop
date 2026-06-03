@@ -1,6 +1,6 @@
 {
   "name": "tolltop",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Tiny dependency-free tooltips with smart edge-aware positioning. One attribute, no build, works in all modern browsers.",
   "main": "tolltop.js",
   "style": "tolltop.css",
