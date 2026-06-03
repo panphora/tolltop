@@ -1,0 +1,25 @@
+{
+  "name": "tolltop",
+  "version": "3.0.0",
+  "description": "Tiny dependency-free tooltips with smart edge-aware positioning. One attribute, no build, works in browsers back to mid-2023.",
+  "main": "tolltop.js",
+  "style": "tolltop.css",
+  "files": [
+    "tolltop.js",
+    "tolltop.css"
+  ],
+  "keywords": [
+    "tooltip",
+    "tooltips",
+    "vanilla",
+    "no-dependencies",
+    "positioning",
+    "lightweight"
+  ],
+  "author": "David Miranda",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panphora/tolltop.git"
+  }
+}

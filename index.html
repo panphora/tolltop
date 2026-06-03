@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tolltop — tiny edge-aware tooltips</title>
+<link rel="stylesheet" href="tolltop.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+  :root {
+    --bg: #0e0e10;
+    --surface: #18181b;
+    --border: #2a2a2e;
+    --text: #e4e4e7;
+    --muted: #71717a;
+    --accent: #a78bfa;
+    --accent-dim: #7c3aed;
+    --radius: 6px;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-serif: 'Newsreader', serif;
+  }
+
+  body {
+    color-scheme: dark;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1.5rem;
+  }
+
+  .container { max-width: 620px; width: 100%; }
+
+  header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: .25rem;
+  }
+
+  header h1 span { color: var(--accent); }
+  header p { color: var(--muted); font-size: 13px; margin-top: .5rem; }
+
+  section { margin-bottom: 2.5rem; }
+
+  section h2 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-size: 12.5px;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    color: var(--muted);
+    white-space: pre;
+    font-family: var(--font-mono);
+  }
+
+  .code-block .tag { color: #f472b6; }
+  .code-block .attr { color: #a78bfa; }
+  .code-block .val { color: #34d399; }
+  .code-block .comment { color: #52525b; font-style: italic; }
+  .code-block .key { color: #60a5fa; }
+  .code-block .fn { color: #f59e0b; }
+
+  .demo-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1rem; }
+
+  .demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    cursor: default;
+    transition: border-color 200ms, background 200ms;
+    user-select: none;
+  }
+
+  .demo-btn:hover { border-color: var(--accent-dim); background: #1e1e22; }
+  .demo-btn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); opacity: .5; }
+
+  button.demo-btn { cursor: pointer; }
+
+  .prose { color: var(--muted); font-size: 13px; line-height: 1.75; }
+  .prose code { background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--accent); }
+
+  .inline-trigger { color: var(--accent); text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; cursor: help; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 10.5px; letter-spacing: .08em; }
+  td code { color: var(--accent); }
+
+  .note { color: var(--muted); font-size: 12px; margin-top: .5rem; }
+
+  .edge { position: fixed; z-index: 10; }
+  .edge .demo-btn { background: rgba(24,24,27,.85); backdrop-filter: blur(4px); }
+  .edge.tl { top: 8px; left: 8px; }
+  .edge.tr { top: 8px; right: 8px; }
+  .edge.bl { bottom: 8px; left: 8px; }
+  .edge.br { bottom: 8px; right: 8px; }
+
+  footer { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); color: #3f3f46; font-size: 11px; text-align: center; }
+  footer a { color: var(--accent-dim); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>tolltop <span>&#9656;</span></h1>
+    <p>Tiny edge-aware tooltips. One attribute, one config call, no dependencies, no build. Works in browsers back to mid-2023.</p>
+  </header>
+
+  <section>
+    <h2>Usage</h2>
+    <div class="code-block"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- mark any element with the attribute --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">data-tooltip</span>=<span class="val">"Save your work"</span><span class="tag">&gt;</span>Save<span class="tag">&lt;/button&gt;</span></div>
+    <p class="prose">Shows on hover and keyboard focus, hides on <code>Esc</code>. Loading <code>tolltop.css</code> yourself is optional, the script injects it if it isn't already there.</p>
+  </section>
+
+  <section>
+    <h2>Configuration</h2>
+    <p class="prose">Style and behavior are global. Call <code>tolltop()</code> once with any subset of options.</p>
+    <div class="code-block"><span class="fn">tolltop</span>({
+  <span class="key">bg</span>: <span class="val">'#18181b'</span>,
+  <span class="key">color</span>: <span class="val">'#e4e4e7'</span>,
+  <span class="key">radius</span>: <span class="val">6</span>,          <span class="comment">// number = px, or any CSS length</span>
+  <span class="key">fontSize</span>: <span class="val">12</span>,
+  <span class="key">padding</span>: <span class="val">'6px 9px'</span>,
+  <span class="key">maxWidth</span>: <span class="val">240</span>,
+  <span class="key">placement</span>: <span class="val">'auto'</span>,  <span class="comment">// 'auto' | 'top' | 'bottom'</span>
+  <span class="key">gap</span>: <span class="val">8</span>,             <span class="comment">// gap to the trigger</span>
+  <span class="key">edge</span>: <span class="val">24</span>            <span class="comment">// min gap from each viewport side</span>
+});</div>
+    <p class="prose">Try it live, then hover any tooltip on the page:</p>
+    <div class="demo-grid">
+      <button class="demo-btn" onclick="tolltop({bg:'#18181b',color:'#e4e4e7',radius:6,fontSize:12,placement:'auto'})">default</button>
+      <button class="demo-btn" onclick="tolltop({bg:'#1e3a5f',color:'#fff',radius:10,fontSize:14})">blue, rounder</button>
+      <button class="demo-btn" onclick="tolltop({bg:'#14532d',color:'#dcfce7',radius:14,fontSize:13,placement:'bottom'})">green, bottom</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Demo</h2>
+    <div class="demo-grid">
+      <div class="demo-btn" data-tooltip="Default tooltip, top placement"><span class="dot"></span> Hover me</div>
+      <div class="demo-btn" data-tooltip="Tab to me with the keyboard, focus shows it too" tabindex="0"><span class="dot"></span> Focusable</div>
+      <div class="demo-btn" data-tooltip="A longer tooltip that runs past the comfortable width and wraps onto multiple lines instead of overflowing the screen edge."><span class="dot"></span> Long text</div>
+    </div>
+    <p class="prose">Works on <span class="inline-trigger" data-tooltip="Inline elements work great">inline spans</span> and <span class="inline-trigger" data-tooltip="No init needed for new nodes">dynamic nodes</span> too.</p>
+  </section>
+
+  <section>
+    <h2>Edge handling</h2>
+    <p class="prose">The four pinned buttons in the page corners stay open-aware: corners near the top flip below, and corners near a side shift inward so the box never clips. The arrow keeps pointing at the trigger.</p>
+    <p class="note">Tip: shrink the window narrow to watch the long tooltip wrap.</p>
+  </section>
+
+  <section>
+    <h2>Options</h2>
+    <table>
+      <thead><tr><th>Option</th><th>Example</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td><code>bg</code></td><td>'#1e3a5f'</td><td>#18181b</td></tr>
+        <tr><td><code>color</code></td><td>'#fff'</td><td>#e4e4e7</td></tr>
+        <tr><td><code>radius</code></td><td>10 or '10px'</td><td>6</td></tr>
+        <tr><td><code>fontSize</code></td><td>14 or '0.9rem'</td><td>12</td></tr>
+        <tr><td><code>padding</code></td><td>'8px 12px'</td><td>6px 9px</td></tr>
+        <tr><td><code>maxWidth</code></td><td>320</td><td>240</td></tr>
+        <tr><td><code>placement</code></td><td>'top' / 'bottom'</td><td>auto</td></tr>
+        <tr><td><code>gap</code></td><td>10</td><td>8</td></tr>
+        <tr><td><code>edge</code></td><td>16</td><td>24</td></tr>
+      </tbody>
+    </table>
+    <p class="note">The trigger attribute stays <code>data-tooltip="text"</code>. Everything else is configured here.</p>
+  </section>
+
+  <footer>One attribute, one config call. <a href="https://www.npmjs.com/package/tolltop">npm</a> &middot; vanilla JS + CSS.</footer>
+</div>
+
+<div class="edge tl"><div class="demo-btn" data-tooltip="Top-left corner: flips below and shifts right to stay on screen.">&#9716; top-left</div></div>
+<div class="edge tr"><div class="demo-btn" data-tooltip="Top-right corner: flips below and shifts left to stay on screen.">top-right &#9716;</div></div>
+<div class="edge bl"><div class="demo-btn" data-tooltip="Bottom-left corner: stays above and shifts right.">&#9716; bottom-left</div></div>
+<div class="edge br"><div class="demo-btn" data-tooltip="Bottom-right corner: stays above and shifts left.">bottom-right &#9716;</div></div>
+
+<script src="tolltop.js"></script>
+</body>
+</html>
