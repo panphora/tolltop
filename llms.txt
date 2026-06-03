@@ -1,0 +1,126 @@
+# tolltop
+
+> Tiny, dependency-free JavaScript tooltips with smart edge-aware positioning. Add a tooltip with one HTML attribute (`data-tooltip`) and configure every tooltip on the page with one global call (`tolltop({...})`). No build step, no framework, works in all modern browsers. About 3 KB gzipped.
+
+tolltop ships as a single adaptive JavaScript file. Drop in one `<script>` tag and it injects its own CSS; or link `tolltop.css` yourself to theme it and the script skips its built-in styles. The only per-element API is the `data-tooltip="text"` attribute. Everything else (colors, sizing, placement, spacing) is set globally through the `tolltop()` function. A single shared tooltip element is appended to `<body>` with `position: fixed`, a maximal `z-index`, and `pointer-events: none`, so it never intercepts the pointer.
+
+## Install
+
+One file (the script injects its own CSS):
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"></script>
+```
+
+With the CSS file (link it before the script to theme via CSS; the script then skips injection):
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tolltop/tolltop.css">
+<script src="https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"></script>
+```
+
+Pin a version with `tolltop@3.0.1` in the URL. Also on unpkg: `https://unpkg.com/tolltop/tolltop.js`.
+
+npm and bundlers:
+
+```bash
+npm install tolltop
+```
+
+```js
+import 'tolltop';
+// optional stylesheet, only if theming via CSS:
+import 'tolltop/tolltop.css';
+```
+
+## Quick start
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"></script>
+<button data-tooltip="Save your work">Save</button>
+```
+
+Tooltips show on hover and on keyboard focus, and hide on `Esc`. New elements work automatically because events are delegated from the document, so no init call is ever needed.
+
+## The attribute
+
+`data-tooltip="text"` is the only per-element attribute. Put it on any element (buttons, spans, links, inline elements). Its value is the tooltip text.
+
+## Configuration (global)
+
+Call `tolltop()` once with any subset of options. It merges into the current config and applies immediately, repositioning an open tooltip if needed. Call `tolltop()` with no arguments to read back a copy of the current config.
+
+```js
+tolltop({
+  bg: '#18181b',      // any CSS color; default '#18181b'
+  color: '#e4e4e7',   // any CSS color; default '#e4e4e7'
+  radius: 6,          // number = px, or any CSS length string; default 6 (6px)
+  fontSize: 12,       // number = px, or any CSS length string; default 12 (12px)
+  padding: '6px 9px', // any CSS padding shorthand; default '6px 9px'
+  maxWidth: 240,      // px, capped to (viewport width - 2*edge) so long text wraps; default 240
+  placement: 'auto',  // 'auto' | 'top' | 'bottom'; default 'auto'
+  gap: 10,            // px between trigger and tooltip; default 10
+  edge: 24,           // px minimum gap from each viewport side; default 24
+});
+```
+
+Options and defaults:
+
+- `bg`: CSS color. Default `#18181b`.
+- `color`: CSS color. Default `#e4e4e7`.
+- `radius`: number (px) or CSS length string. Default `6`.
+- `fontSize`: number (px) or CSS length string. Default `12`.
+- `padding`: CSS padding shorthand. Default `'6px 9px'`.
+- `maxWidth`: number (px). Default `240`. Effective max width is `min(maxWidth, viewportWidth - 2*edge)`.
+- `placement`: `'auto' | 'top' | 'bottom'`. Default `'auto'`.
+- `gap`: number (px). Default `10`.
+- `edge`: number (px). Default `24`.
+
+## CSS custom properties (theming via CSS)
+
+When `tolltop.css` is linked you can theme through CSS variables on `.tolltop`:
+
+- `--tt-bg`: default `#18181b`
+- `--tt-color`: default `#e4e4e7`
+- `--tt-radius`: default `6px`
+- `--tt-font-size`: default `12px`
+- `--tt-padding`: default `6px 9px`
+- `--tt-arrow`: arrow size, default `6px`
+- `--tt-arrow-x`: computed by the script to keep the arrow on the trigger; do not set it.
+
+Values passed to `tolltop({...})` are applied as inline styles and override the stylesheet. Options you never pass stay on the CSS defaults.
+
+## Positioning behavior
+
+- Shows above the trigger by default; flips below when there is no room above.
+- `placement` forces a side but still flips if the forced side will not fit.
+- Centers horizontally on the trigger, then shifts left or right to stay on screen, leaving `edge` px on each side. The vertical scrollbar is excluded from the math.
+- Long text wraps because `maxWidth` is capped to the available width.
+- The arrow stays centered on the trigger and points toward it after any horizontal shift.
+- Repositions on scroll (capture phase) and on resize.
+- Hides automatically when the trigger is removed from the DOM, scrolled out of the viewport, or clipped out of a scroll or overflow container (it tracks the trigger through nested scrollers).
+
+## Events and behavior
+
+- Shows on hover (pointerover) and on keyboard focus (focusin).
+- Hides on pointer-out (pointerout), blur (focusout), and the `Esc` key.
+- Event delegation from the document means dynamically added elements work with no re-initialization.
+- The library guards against double-initialization, so loading the script more than once is harmless.
+
+## Accessibility
+
+- The tooltip element has `role="tooltip"`.
+- On show, the trigger receives `aria-describedby` pointing at the tooltip (merged with any existing value), restored on hide.
+- Keyboard focus shows the tooltip; `Esc` dismisses it.
+
+## Browser support
+
+All modern browsers. No dependencies, no build step, no polyfills.
+
+## Links
+
+- Demo: https://tolltop.panphora.com
+- Repository: https://github.com/panphora/tolltop
+- npm: https://www.npmjs.com/package/tolltop
+- Script (CDN): https://cdn.jsdelivr.net/npm/tolltop/tolltop.js
+- Stylesheet (CDN): https://cdn.jsdelivr.net/npm/tolltop/tolltop.css
