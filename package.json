@@ -33,5 +33,10 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0"
+  },
+  "hyper": {
+    "kind": "lib",
+    "status": "active",
+    "url": "https://tolltop.panphora.com"
   }
 }
