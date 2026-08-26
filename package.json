@@ -9,6 +9,7 @@
   "main": "tolltop.js",
   "style": "tolltop.css",
   "scripts": {
+    "deploy": "wrangler deploy && git rev-parse HEAD > .deploy",
     "build": "node build.js",
     "prepublishOnly": "node build.js",
     "test": "playwright test"
