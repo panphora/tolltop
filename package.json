@@ -15,6 +15,7 @@
     "test": "playwright test"
   },
   "files": [
+    "packed-contract.json",
     "tolltop.js",
     "tolltop.css"
   ],
