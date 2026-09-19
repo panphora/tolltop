@@ -1,5 +1,5 @@
 /*!
- * tolltop v3.0.3
+ * tolltop v3.1.0
  * Tiny edge-aware tooltips with smart positioning. One attribute, one config call.
  * MIT License · https://github.com/panphora/tolltop
  */

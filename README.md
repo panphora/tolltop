@@ -59,7 +59,7 @@ so you can edit the CSS directly:
 <script src="https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"></script>
 ```
 
-Pin a version with `tolltop@3.0.3` in either URL. Also on unpkg:
+Pin a version with `tolltop@3.1.0` in either URL. Also on unpkg:
 `https://unpkg.com/tolltop/tolltop.js`.
 
 ### npm (bundlers)

@@ -19,7 +19,7 @@ With the CSS file (link it before the script to theme via CSS; the script then s
 <script src="https://cdn.jsdelivr.net/npm/tolltop/tolltop.js"></script>
 ```
 
-Pin a version with `tolltop@3.0.3` in the URL. Also on unpkg: `https://unpkg.com/tolltop/tolltop.js`.
+Pin a version with `tolltop@3.1.0` in the URL. Also on unpkg: `https://unpkg.com/tolltop/tolltop.js`.
 
 npm and bundlers:
 

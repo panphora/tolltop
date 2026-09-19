@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0] - 2026-09-19
+
+### Added
+- Deploy script with git revision tracking
+- Packed contract manifest
+
+### Changed
+- Include packed contract in published package files
+- Run CI on Node 26
+
+
+
 ## [3.0.3] - 2026-08-14
 
 ### Added
